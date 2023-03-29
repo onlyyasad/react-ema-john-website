@@ -1,12 +1,11 @@
 import React from 'react';
 
 const Products = (props) => {
-    const { img, name, price, seller, ratings, id, shipping } = props.data;
+    const { img, name, price, seller, ratings, id} = props.data;
     
-    const sendToCart = () =>{
-        props.setToCart({id, img, name, price, shipping})
+    const sendToCart = (product) =>{
+        props.setToCart(product);
     }
-    console.log(props.data)
     
     return (
         <>
@@ -23,7 +22,7 @@ const Products = (props) => {
                     </div>
                 </div>
                 <div className="card-actions justify-center">
-                    <button onClick={() => sendToCart()} className="bg-orange-300 w-full py-2 hover:bg-orange-400 rounded-b-lg font-bold">Add to Cart</button>
+                    <button onClick={() => sendToCart(props.data)} className="bg-orange-300 w-full py-2 hover:bg-orange-400 rounded-b-lg font-bold">Add to Cart</button>
                 </div>
             </div>
         </>
