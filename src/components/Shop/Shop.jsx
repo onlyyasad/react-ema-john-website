@@ -1,64 +1,63 @@
 import React, { useEffect, useState } from 'react';
 import Cart from '../Cart/Cart';
-import { getLocalStorageData, setToLocalStorage } from '../fakeDb/fakeDb';
+import { addToDb, getStoredCart } from '../fakeDb/fakeDb';
 import Products from '../Products/Products';
 
-
 const Shop = () => {
-    const [products, setProducts] = useState([]);
+    const [productsData, setProductsData] = useState([]);
 
     const [cart, setCart] = useState([]);
 
     useEffect(() => {
         fetch('products.json')
             .then(res => res.json())
-            .then(data => setProducts(data))
+            .then(data => setProductsData(data))
     }, [])
 
     useEffect(() => {
-        const storedData = getLocalStorageData();
-        const savedCart = [];
-        for(const id in storedData){
-            let savedProduct = products.find(pd => pd.id === id)
-            if(savedProduct){
-                const quantity = storedData[id];
-                savedProduct.quantity = quantity;
-                savedCart.push(savedProduct);
+        const newCart = [];
+        const storedCart = getStoredCart();
+        for (const id in storedCart) {
+            const storedProduct = productsData.find(pd => pd.id === id);
+            if (storedProduct) {
+                const quantity = storedCart[id];
+                storedProduct.quantity = quantity;
+                newCart.push(storedProduct);
             }
         }
-        setCart(savedCart)
-    }, [products])
+        setCart(newCart);
+    }, [productsData])
 
-    const setToCart = (product) => {
+    const handleAddToCart = (product) => {
         let newCart = [];
-        // console.log(cart)
-        const exist = cart.find(pd => pd.id === product.id)
-        if(!exist){
+        const existing = cart.find(pd => pd.id === product.id)
+        if(!existing){
             product.quantity = 1;
             newCart = [...cart, product]
         }
         else{
-            exist.quantity = exist.quantity + 1;
-            const remaining = cart.filter(pd => pd.id !== exist.id);
-            newCart = [...remaining, exist]
+            existing.quantity = existing.quantity + 1;
+            const remaining = cart.filter(pd => pd.id !== product.id);
+            newCart = [...remaining, existing]
         }
         
         setCart(newCart);
-        setToLocalStorage(product.id);
+        addToDb(product.id)
     }
 
-    
+
+
     return (
         <div className='grid grid-cols-12 mt-4 relative'>
             <div className='col-span-9'>
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-4 p-4'>
                     {
-                        products.map((product) => <Products data={product} key={product.id} setToCart={setToCart}></Products>)
+                        productsData.map(product => <Products product={product} key={product.id} handleAddToCart={handleAddToCart}></Products>)
                     }
                 </div>
             </div>
             <div className='col-span-3 bg-orange-300 p-4 sticky top-0 h-screen'>
-                <Cart cart ={cart} ></Cart>
+                <Cart cart={cart}></Cart>
             </div>
         </div>
     );

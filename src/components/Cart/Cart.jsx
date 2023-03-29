@@ -1,23 +1,17 @@
 import React from 'react';
 
-const Cart = ({ cart }) => {
-
+const Cart = ({cart}) => {
     let quantity = 0;
     let totalPrice = 0;
     let shippingCharge = 0;
-    let tax = 0;
-    let grandTotal = 0;
-
-    for (const product of cart) {
+    for(const product of cart){
+        
+        quantity += product.quantity;
         totalPrice += product.price * product.quantity;
         shippingCharge += product.shipping * product.quantity;
-        quantity += product.quantity;
     }
-
-    tax = totalPrice * 0.1;
-    grandTotal = totalPrice + shippingCharge + tax;
-
-
+    const tax = totalPrice * 0.1;
+    const grandTotal = totalPrice + shippingCharge + tax;
 
     return (
         <>
